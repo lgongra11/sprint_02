@@ -1,45 +1,28 @@
-import express from "express"
-const app = express()
-const PORT = 3000
-
-app.get("/", (req, res) => {
-  res.send("Hello World!")
-})
-
-function criarMensagem(id, usuario, texto){
-    return { id, usuario: usuario.trim(), texto: texto.trim() }
-};
+import express from "express";
+const app = express();
+const PORT = 3000;
 
 const mensagens = [
-    criarMensagem(1, 'Ana', 'Olá, turma!'),
-    criarMensagem(2, 'Pedro', 'Servidor funciona TOP!'),
-    criarMensagem(3, 'João', 'Vamos conversar com o mensageiro local!'),
+  { id: 1, usuario: "Ana", texto: "Bom dia!" },
+  { id: 2, usuario: "Pedro", texto: "Olá!" },
+  { id: 3, usuario: "Maria", texto: "Tudo bem?" },
+  { id: 4, usuario: "Lucas", texto: "Como vai?" },
+  { id: 5, usuario: "Carla", texto: "Até logo!" }
 ];
 
-function listarMensagens(){
-    return mensagens;
-};
-
-function quantidadeMensagens(){
-    return mensagens.length;
-};
-
-function buscarMensagem(id){
-    return mensagens.find(mensagens => mensagens.id === id);
-};
+function listarMensagens() { return mensagens; }
 
 app.get("/", (req, res) => res.send("Servidor rodando! 🚀"));
-app.get("/mensagens", (req, res) => res.json({ status: 'online', sprint: 2, total: quantidadeMensagens()}));
-app.get('/sobre', (req, res) => res.send('Meu primeiro servidor Node.js com Express e ES Modules.'));
-
-// [SPRINT 02 - NOVO] 6. Consulta, total e busca por ID; erro HTTP 404
-app.get('/mensagens', (req, res) =>  res.json(listarMensagens()));
-app.get('/total-mensagens', (req, res) =>  res.json({ total: quantidadeMensagens() }));
-app.get('/mensagens/:id', (req, res) =>  {
-    const mensagem = buscarMensagem(Number(req.params.id));
-    if (!mensagem) 
-        return res.status(404).json({ error: 'Mensagem não encontrada'});
-    res.json(mensagem);
+app.get("/status", (req, res) => res.json({ status: "online", sprint: 2 }));
+app.get("/sobre", (req, res) => res.send("Projeto Mensageiro Local"));
+app.get("/mensagens", (req, res) => res.json(listarMensagens()));
+app.get("/mensagens/:id", (req, res) => {
+  const mensagem = mensagens.find(m => m.id === Number(req.params.id));
+  if (!mensagem) return res.status(404).json({ erro: "Não encontrada" });
+  res.json(mensagem);
 });
+app.get("/total-mensagens", (req, res) => res.json({ total: mensagens.length }));
 
-app.listen(PORT, () => console.log(`Servidor em: http://localhost:${PORT}`));
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Servidor em http://localhost:${PORT}`);
+});
